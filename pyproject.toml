@@ -7,27 +7,32 @@ license = "MIT"
 requires-python = ">=3.10"
 dependencies = [
     "dacvae",
-    "datasets>=3.0.0",
-    "gradio>=5.0.0",
     "huggingface-hub>=0.34.0",
     "llvmlite>=0.40.0",
     "numba>=0.57.0",
-    "peft>=0.18.0",
     "pyyaml>=6.0",
     "safetensors>=0.7.0",
     "soundfile>=0.12.0",
     "sentencepiece>=0.1.99,<0.2",
-    "silentcipher @ git+https://github.com/SesameAILabs/silentcipher.git@d46d7d0893a583d8968ab3a6626e2289faec9152",
+    "silentcipher>=1.0.5",
     "torch>=2.10.0",
     "torchaudio>=2.10.0",
     "torchcodec>=0.10.0,<0.11.0",
     "transformers>=5.12.1,<6",
     "tqdm>=4.67.3",
-    "wandb>=0.17.0",
-    "torchdata>=0.11.0",
 ]
 
 [project.optional-dependencies]
+# 学習と Web UI に使う依存（推論だけなら不要。irodori-app で配布サイズを減らすために分けた）
+train = [
+    "datasets>=3.0.0",
+    "peft>=0.18.0",
+    "wandb>=0.17.0",
+    "torchdata>=0.11.0",
+]
+webui = [
+    "gradio>=5.0.0",
+]
 cpu = [
     "torch>=2.10.0,<2.11.0",
     "torchao>=0.16.0,<0.17.0",
@@ -92,6 +97,7 @@ triton-xpu = [
     { index = "pytorch-xpu", extra = "xpu", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
 ]
 dacvae = { git = "https://github.com/facebookresearch/dacvae" }
+silentcipher = { git = "https://github.com/SesameAILabs/silentcipher.git", rev = "d46d7d0893a583d8968ab3a6626e2289faec9152" }
 
 [[tool.uv.index]]
 name = "pytorch-cpu"

@@ -151,3 +151,5 @@ line-ending = "auto"
 
 [tool.setuptools]
 packages = ["irodori_tts"]
+# nanagoe: also ship train.py as a top-level module so the app can run Speaker Inversion training
+py-modules = ["train"]

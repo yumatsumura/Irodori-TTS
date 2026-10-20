@@ -3682,6 +3682,25 @@ def main() -> None:
                 "Bundled tokenizer was found, but the MeanFlow teacher checkpoint has no "
                 "embedded text encoder config."
             )
+    elif args.init_checkpoint is not None:
+        # nanagoe: when initializing from a released checkpoint, prefer the tokenizer bundled
+        # next to it and the text encoder config embedded in it, so training works offline
+        # (the same tokenizer inference uses). Only switch when both are present; otherwise
+        # keep the upstream behavior of resolving text_tokenizer_repo from the hub.
+        init_path = _normalize_checkpoint_path(args.init_checkpoint)
+        bundled_tokenizer = _resolve_bundled_tokenizer_source(init_path)
+        init_condition_config = _load_embedded_text_encoder_config(init_path)
+        if bundled_tokenizer is not None and init_condition_config is not None:
+            condition_asset_cfg = replace(
+                model_cfg,
+                text_tokenizer_repo=str(bundled_tokenizer),
+                caption_tokenizer_repo=(
+                    str(bundled_tokenizer) if model_cfg.use_caption_condition else None
+                ),
+                text_encoder_revision=None,
+            )
+            embedded_condition_config = init_condition_config
+            condition_assets_are_local = True
 
     if distributed:
         local_files_only = not is_main_process
